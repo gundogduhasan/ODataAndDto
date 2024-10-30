@@ -55,6 +55,7 @@ namespace WebApiWithOData.Controllers
         //    return Ok(personContext.Persons);
         //}
 
+        //Mapper nasıl genericleştirilebilir.
         [EnableQuery]
         public IActionResult Get()
         {
