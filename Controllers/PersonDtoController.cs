@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 
@@ -67,6 +69,44 @@ namespace WebApiWithOData.Controllers
 
 
             return Ok(personDtos);
+        }
+
+        [HttpPatch]
+        [EnableQuery]
+        public virtual async Task<IActionResult> Patch([FromODataUri] int key, Delta<PersonDto> entityDelta)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Person entity = await personContext.Persons.FindAsync(key);
+
+            string msg = "NOT NULL";
+            if (entityDelta == null)
+                msg = "null";
+            //entityDelta.Patch(entity);
+
+
+
+            return Ok(msg + " WORKED");
+        }
+
+        [HttpPut]
+        [EnableQuery]
+        public virtual async Task<IActionResult> Put(PersonDto personDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+        //    Person entity = await personContext.Persons.FindAsync(key);
+
+            string msg = "NOT NULL";
+            if (personDto == null)
+                msg = "null";
+            //entityDelta.Patch(entity);
+
+
+
+            return Ok(msg + " WORKED");
         }
     }
 }
