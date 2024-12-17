@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApiWithOData.Controllers
 {
@@ -46,9 +48,15 @@ namespace WebApiWithOData.Controllers
         [EnableQuery]
         public IActionResult Get(int key)
         {
-            var singlePerson = personContext.Persons.Find(key);
+            var singlePerson = personContext.Persons.Where(x => x.Id.Equals(key));
+            if (singlePerson != null)
+            {
+                var personDtos = _mapper.ProjectTo<PersonDto>(singlePerson);
+                return Ok(SingleResult.Create(personDtos));
+            }
 
-            return Ok(singlePerson);
+            return NotFound();
+
         }
 
         //[EnableQuery]
@@ -70,6 +78,8 @@ namespace WebApiWithOData.Controllers
 
             return Ok(personDtos);
         }
+
+
 
         [HttpPatch]
         [EnableQuery]
@@ -97,7 +107,7 @@ namespace WebApiWithOData.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-        //    Person entity = await personContext.Persons.FindAsync(key);
+            //    Person entity = await personContext.Persons.FindAsync(key);
 
             string msg = "NOT NULL";
             if (personDto == null)
